@@ -12,7 +12,9 @@ dbconfig = {
 
 cnxpool = pooling.MySQLConnectionPool(pool_name="mypool", pool_size=3, **dbconfig)
 
-json_file_path = "/Users/lulu/Desktop/WeHelp/Phase2/taipei-day-trip/data/taipei-attractions.json"
+current_directory = os.getcwd()
+json_file_path = os.path.join(current_directory, 'data/taipei-attractions.json')
+
 with open(json_file_path, 'r') as f:
     data = json.load(f)
 
