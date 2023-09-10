@@ -1,8 +1,10 @@
 from flask import *
 import os
 from mysql.connector import pooling
+from flask_cors import CORS
 
-app=Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
+CORS(app)
 app.config["JSON_AS_ASCII"]=False
 app.config["TEMPLATES_AUTO_RELOAD"]=True
 
