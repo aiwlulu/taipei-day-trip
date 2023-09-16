@@ -120,6 +120,8 @@ def get_attraction_by_id(attractionId):
         cnx = cnxpool.get_connection()
         cursor = cnx.cursor()
 
+        cursor.execute("SET SESSION group_concat_max_len = 65536")
+
         query = """
             SELECT
                 a.id,

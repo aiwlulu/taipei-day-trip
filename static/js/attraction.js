@@ -1,77 +1,157 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const searchForm = document.getElementById('search-bar');
-    const inputField = document.getElementById('input-field');
-    const attractionsContainer = document.querySelector('.attraction-group');
-  
-    let nextPage = 0;
-    let loading = false;
-  
-    function clearAttractions() {
-        attractionsContainer.innerHTML = '';
+// tourFee
+const morningRadio = document.getElementById("morning");
+const afternoonRadio = document.getElementById("afternoon");
+const tourFeeElement = document.getElementById("tour-fee");
+
+morningRadio.addEventListener("change", updateTourFee);
+afternoonRadio.addEventListener("change", updateTourFee);
+
+function updateTourFee() {
+  const selectedTime = morningRadio.checked ? "morning" : "afternoon";
+  let tourFee = 2000;
+
+  if (selectedTime === "afternoon") {
+    tourFee = 2500;
+  }
+
+  tourFeeElement.textContent = `新台幣 ${tourFee} 元`;
+}
+
+updateTourFee();
+
+// currentDate
+let currentDate = new Date();
+let timezoneOffset = -8 * 60;
+
+currentDate.setMinutes(currentDate.getMinutes() + timezoneOffset);
+
+let currentFormatted = currentDate.toISOString().split("T")[0];
+
+let dateInput = document.getElementById("date-input");
+
+dateInput.setAttribute("min", currentFormatted);
+
+// get Attraction info
+document.addEventListener("DOMContentLoaded", async function () {
+  try {
+    const hostname = window.location.host;
+    const apiBaseUrl = `http://${hostname}/api`;
+
+    const attractionId = getAttractionIdFromURL();
+    const response = await fetch(`${apiBaseUrl}/attraction/${attractionId}`);
+
+    if (!response.ok) {
+      throw new Error(`Error：${response.status} ${response.statusText}`);
     }
-  
-    function loadAttractions() {
-        if (loading || nextPage === null) return;
-  
-        loading = true;
-        const keyword = inputField.value.trim();
-  
-        const hostname = window.location.host;
-        const apiBaseUrl = `http://${hostname}/api`;
-  
-        fetch(`${apiBaseUrl}/attractions?page=${nextPage}&keyword=${keyword}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.data.length === 0) {
-                    attractionsContainer.textContent = '沒有符合條件的結果';
-                    nextPage = null;
-                } else {
-                    data.data.forEach(attraction => {
-                        const attractionItem = document.createElement('div');
-                        attractionItem.classList.add('attraction-item');
-  
-                        const mrtText = attraction.mrt ? attraction.mrt : '無鄰近捷運站';
-  
-                        attractionItem.innerHTML = `
-                            <img src="${attraction.images[0] || ''}" alt="">
-                            <div class="attr-name">${attraction.name}</div>
-                            <div class="attr-container">
-                                <div class="attr-mrt">${mrtText}</div>
-                                <div class="attr-category">${attraction.category}</div>
-                            </div>
-                        `;
-  
-                        attractionsContainer.appendChild(attractionItem);
-                    });
-  
-                    nextPage = data.nextPage;
-                }
-  
-                loading = false;
-            })
-            .catch(error => {
-                console.error('發生錯誤：', error);
-                loading = false;
-            });
+
+    const data = await response.json();
+
+    if (data.data) {
+      displayAttractionInfo(data.data);
+      initializeCarousel(data.data.images);
+    } else {
+      console.error(data.message);
     }
-  
-    searchForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        clearAttractions();
-        nextPage = 0;
-        loadAttractions();
+  } catch (error) {
+    console.error("Error：", error);
+  }
+});
+
+function getAttractionIdFromURL() {
+  const pathSegments = window.location.pathname.split("/");
+  return pathSegments[pathSegments.length - 1];
+}
+
+function displayAttractionInfo(attraction) {
+  const imgContainer = document.querySelector(".img-container img");
+  imgContainer.src = attraction.images[0];
+
+  const nameElement = document.querySelector(".profile .name");
+  nameElement.textContent = attraction.name;
+
+  const categoryElement = document.querySelector(".profile .category");
+  categoryElement.textContent = attraction.category;
+
+  const mrtElement = document.querySelector(".profile .mrt");
+  mrtElement.textContent = attraction.mrt;
+
+  const descriptionElement = document.querySelector("#description");
+  descriptionElement.textContent = attraction.description;
+
+  const addressElement = document.querySelector("#address");
+  addressElement.textContent = attraction.address;
+
+  const transportElement = document.querySelector("#transport");
+  transportElement.textContent = attraction.transport;
+}
+
+// Carousel function
+async function initializeCarousel(images) {
+  const imgContainer = document.querySelector(".img-container img");
+  const buttonLeft = document.querySelector(".button-left");
+  const buttonRight = document.querySelector(".button-right");
+  const dotContainer = document.getElementById("dot-container");
+
+  let currentImageIndex = 0;
+
+  function updateImage() {
+    imgContainer.src = "";
+    const img = new Image();
+    img.onload = () => {
+      imgContainer.src = img.src;
+    };
+    img.src = images[currentImageIndex];
+  }
+
+  function updateActiveDot() {
+    const dots = document.querySelectorAll(".dot");
+    dots.forEach((dot, index) => {
+      if (index === currentImageIndex) {
+        dot.classList.add("dot--active");
+      } else {
+        dot.classList.remove("dot--active");
+      }
     });
-  
-    loadAttractions();
-  
-    window.addEventListener('scroll', function () {
-        const scrollHeight = document.documentElement.scrollHeight;
-        const scrollTop = window.scrollY;
-        const clientHeight = document.documentElement.clientHeight;
-  
-        if (scrollTop + clientHeight >= scrollHeight - 100 && !loading) {
-            loadAttractions();
-        }
+  }
+
+  function prevImage() {
+    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+    updateImage();
+    updateActiveDot();
+  }
+
+  function nextImage() {
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+    updateImage();
+    updateActiveDot();
+  }
+
+  buttonLeft.addEventListener("click", prevImage);
+  buttonRight.addEventListener("click", nextImage);
+
+  // Create dots
+  for (let i = 0; i < images.length; i++) {
+    const dot = document.createElement("span");
+    dot.classList.add("dot");
+    if (i === 0) {
+      dot.classList.add("dot--active");
+    }
+    dot.addEventListener("click", () => {
+      currentImageIndex = i;
+      updateImage();
+      updateActiveDot();
     });
-  });
-  
+    dotContainer.appendChild(dot);
+  }
+
+  for (let i = 0; i < images.length; i++) {
+    const img = new Image();
+    img.onload = () => {
+      if (i === images.length - 1) {
+        updateImage();
+        updateActiveDot();
+      }
+    };
+    img.src = images[i];
+  }
+}

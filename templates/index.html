@@ -1,59 +1,75 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>台北一日遊</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700&display=swap" />
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/global.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/index.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700&display=swap"
+    />
+  </head>
+  <body>
     <div class="nav">
-        <div class="nav-items">
-            <div class="nav-title">台北一日遊</div>
-            <div class="menu">
-                <div class="menu-item">預定行程</div>
-                <div class="menu-item">登入/註冊</div>
-            </div>
+      <div class="nav-items">
+        <a href="/">
+          <div class="nav-title">台北一日遊</div>
+        </a>
+        <div class="menu">
+          <div class="menu-item">預定行程</div>
+          <div class="menu-item">登入/註冊</div>
         </div>
+      </div>
     </div>
 
     <div class="welcome">
-        <div class="wel-container">
-            <div class="slogan slogan-1">
-                <div>輕鬆享受台北一日悠閒</div>
-            </div>
-
-            <div class="slogan slogan-2">
-                <div>探索每個角落，體驗城市的深度旅遊行程</div>
-            </div>
-
-            <form id="search-bar" autocomplete="off">
-                <input type="text" placeholder="輸入景點名稱查詢" name="keyword" id="input-field">
-                <button type="submit"><img src="{{ url_for('static', filename='img/icon_search.png') }}"></button>
-            </form>
+      <div class="wel-container">
+        <div class="slogan slogan-1">
+          <div>輕鬆享受台北一日悠閒</div>
         </div>
+
+        <div class="slogan slogan-2">
+          <div>探索每個角落，體驗城市的深度旅遊行程</div>
+        </div>
+
+        <form id="search-bar" autocomplete="off">
+          <input
+            type="text"
+            placeholder="輸入景點名稱查詢"
+            name="keyword"
+            id="input-field"
+          />
+          <button type="submit">
+            <img
+              src="{{ url_for('static', filename='img/icon_search.png') }}"
+            />
+          </button>
+        </form>
+      </div>
     </div>
 
     <div class="main">
-        <div class="list-bar">
-            <div class="button-left"></div>
-            <div class="mrts-list"></div>
-            <div class="button-right"></div>
-        </div>
+      <div class="list-bar">
+        <div class="button-left"></div>
+        <div class="mrts-list"></div>
+        <div class="button-right"></div>
+      </div>
     </div>
-
 
     <div class="attraction-group"></div>
 
-
     <div class="footer">
-        <div class="copyright">COPYRIGHT &copy; 2023 台北一日遊</div>
+      <div class="copyright">COPYRIGHT &copy; 2023 台北一日遊</div>
     </div>
 
-
-    <script src="{{ url_for('static', filename='js/attraction.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/mrt.js') }}"></script>
-</body>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+  </body>
 </html>
