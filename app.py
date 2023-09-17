@@ -1,8 +1,10 @@
 from flask import *
 import os
 from mysql.connector import pooling
+from flask_cors import CORS
 
-app=Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
+CORS(app)
 app.config["JSON_AS_ASCII"]=False
 app.config["TEMPLATES_AUTO_RELOAD"]=True
 
@@ -117,6 +119,8 @@ def get_attraction_by_id(attractionId):
     try:
         cnx = cnxpool.get_connection()
         cursor = cnx.cursor()
+
+        cursor.execute("SET SESSION group_concat_max_len = 65536")
 
         query = """
             SELECT
