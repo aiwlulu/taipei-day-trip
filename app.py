@@ -2,6 +2,10 @@ from flask import *
 import os
 from mysql.connector import pooling
 from flask_cors import CORS
+from werkzeug.security import generate_password_hash, check_password_hash
+import jwt
+import datetime
+
 
 app = Flask(__name__, static_url_path='/static')
 CORS(app)
@@ -16,6 +20,8 @@ dbconfig = {
 }
 
 cnxpool = pooling.MySQLConnectionPool(pool_name="mypool", pool_size=5, **dbconfig)
+
+
 
 # Pages
 @app.route("/")
@@ -194,6 +200,95 @@ def get_mrt_stations_sorted_by_attractions():
 
     except Exception as e:
         return jsonify({'error': True, 'message': '伺服器內部錯誤'}), 500
+
+
+@app.route('/api/user', methods=['POST'])
+def register_user():
+    try:
+        data = request.json
+        name = data.get('name')
+        email = data.get('email')
+        password = data.get('password')
+
+        if not name or not email or not password:
+            return jsonify({'error': True, 'message': '請提供完整的註冊資訊'}), 400
+
+        hashed_password = generate_password_hash(password)
+
+        cnx = cnxpool.get_connection()
+        cursor = cnx.cursor()
+        cursor.execute("SELECT id FROM User WHERE email = %s", (email,))
+        existing_user = cursor.fetchone()
+        cursor.close()
+        cnx.close()
+
+        if existing_user:
+            return jsonify({'error': True, 'message': '該 Email 已被註冊'}), 400
+
+        cnx = cnxpool.get_connection()
+        cursor = cnx.cursor()
+        cursor.execute("INSERT INTO User (name, email, password) VALUES (%s, %s, %s)", (name, email, hashed_password))
+        cnx.commit()
+        cursor.close()
+        cnx.close()
+
+        return jsonify({'ok': True}), 200
+
+    except Exception as e:
+        print(e)
+        return jsonify({'error': True, 'message': '伺服器內部錯誤'}), 500
+
+
+@app.route('/api/user/auth', methods=['PUT'])
+def login_user():
+    try:
+        data = request.json
+        email = data.get('email')
+        password = data.get('password')
+
+        if not email or not password:
+            return jsonify({'error': True, 'message': '請提供完整的登入資訊'}), 400
+
+        cnx = cnxpool.get_connection()
+        cursor = cnx.cursor()
+        cursor.execute("SELECT id, name, password FROM User WHERE email = %s", (email,))
+        user = cursor.fetchone()
+        cursor.close()
+        cnx.close()
+
+        if not user or not check_password_hash(user[2], password):
+            return jsonify({'error': True, 'message': '帳號或密碼錯誤'}), 400
+
+        token = jwt.encode({
+            'id': user[0],
+            'name': user[1],
+            'email': email,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=7)
+        }, os.getenv('JWT_SECRET'))
+
+        return jsonify({'token': token}), 200
+
+    except Exception as e:
+        print(e)
+        return jsonify({'error': True, 'message': '伺服器內部錯誤'}), 500
+
+
+@app.route('/api/user/auth', methods=['GET'])
+def get_current_user():
+    try:
+        token = request.headers.get('Authorization').split(' ')[1]
+        data = jwt.decode(token, os.getenv('JWT_SECRET'), algorithms=['HS256'])
+
+        return jsonify({'data': {
+            'id': data['id'],
+            'name': data['name'],
+            'email': data['email']
+        }}), 200
+
+    except Exception as e:
+        print(e)
+        return jsonify({'data': None}), 200
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port="3000")

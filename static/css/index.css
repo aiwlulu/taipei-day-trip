@@ -226,6 +226,9 @@
   text-align: left;
   padding-left: 10px;
   box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .attraction-group .attraction-item .attr-container {

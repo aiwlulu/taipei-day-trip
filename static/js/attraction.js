@@ -3,40 +3,28 @@ const morningRadio = document.getElementById("morning");
 const afternoonRadio = document.getElementById("afternoon");
 const tourFeeElement = document.getElementById("tour-fee");
 
-morningRadio.addEventListener("change", updateTourFee);
-afternoonRadio.addEventListener("change", updateTourFee);
-
 function updateTourFee() {
-  const selectedTime = morningRadio.checked ? "morning" : "afternoon";
-  let tourFee = 2000;
-
-  if (selectedTime === "afternoon") {
-    tourFee = 2500;
-  }
-
+  const tourFee = morningRadio.checked ? 2000 : 2500;
   tourFeeElement.textContent = `新台幣 ${tourFee} 元`;
 }
 
+morningRadio.addEventListener("change", updateTourFee);
+afternoonRadio.addEventListener("change", updateTourFee);
 updateTourFee();
 
 // currentDate
-let currentDate = new Date();
-let timezoneOffset = -8 * 60;
-
+const dateInput = document.getElementById("date-input");
+const timezoneOffset = -8 * 60;
+const currentDate = new Date();
 currentDate.setMinutes(currentDate.getMinutes() + timezoneOffset);
-
-let currentFormatted = currentDate.toISOString().split("T")[0];
-
-let dateInput = document.getElementById("date-input");
-
+const currentFormatted = currentDate.toISOString().split("T")[0];
 dateInput.setAttribute("min", currentFormatted);
 
-// get Attraction info
-document.addEventListener("DOMContentLoaded", async function () {
+// Attraction info
+document.addEventListener("DOMContentLoaded", async () => {
   try {
     const hostname = window.location.host;
     const apiBaseUrl = `http://${hostname}/api`;
-
     const attractionId = getAttractionIdFromURL();
     const response = await fetch(`${apiBaseUrl}/attraction/${attractionId}`);
 
@@ -64,24 +52,19 @@ function getAttractionIdFromURL() {
 
 function displayAttractionInfo(attraction) {
   const imgContainer = document.querySelector(".img-container img");
-  imgContainer.src = attraction.images[0];
-
   const nameElement = document.querySelector(".profile .name");
-  nameElement.textContent = attraction.name;
-
   const categoryElement = document.querySelector(".profile .category");
-  categoryElement.textContent = attraction.category;
-
   const mrtElement = document.querySelector(".profile .mrt");
-  mrtElement.textContent = attraction.mrt;
-
   const descriptionElement = document.querySelector("#description");
-  descriptionElement.textContent = attraction.description;
-
   const addressElement = document.querySelector("#address");
-  addressElement.textContent = attraction.address;
-
   const transportElement = document.querySelector("#transport");
+
+  imgContainer.src = attraction.images[0];
+  nameElement.textContent = attraction.name;
+  categoryElement.textContent = attraction.category;
+  mrtElement.textContent = attraction.mrt;
+  descriptionElement.textContent = attraction.description;
+  addressElement.textContent = attraction.address;
   transportElement.textContent = attraction.transport;
 }
 
