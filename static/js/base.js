@@ -31,19 +31,32 @@ function toggleDialog(dialog, isActive, maskDisplay) {
 }
 
 elements.loginRegister.addEventListener("click", function () {
-  toggleDialog(elements.dialogSignin, true, "block");
+  const token = localStorage.getItem("token");
+  if (!token) {
+    toggleDialog(elements.dialogSignin, true, "block");
+  }
 });
 
 elements.closeSigninIcon.addEventListener("click", function () {
   toggleDialog(elements.dialogSignin, false, "none");
   elements.registerMessage.textContent = "";
   elements.loginMessage.textContent = "";
+  elements.loginEmail.value = "";
+  elements.loginPassword.value = "";
+  elements.registerName.value = "";
+  elements.registerEmail.value = "";
+  elements.registerPassword.value = "";
 });
 
 elements.closeSignupIcon.addEventListener("click", function () {
   toggleDialog(elements.dialogSignup, false, "none");
   elements.registerMessage.textContent = "";
   elements.loginMessage.textContent = "";
+  elements.loginEmail.value = "";
+  elements.loginPassword.value = "";
+  elements.registerName.value = "";
+  elements.registerEmail.value = "";
+  elements.registerPassword.value = "";
 });
 
 elements.registerLink.addEventListener("click", function () {
