@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}台北一日遊{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/base.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700&display=swap"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='img/favicon.ico') }}"
+    />
+    {% block stylesheet %}{% endblock %}
+  </head>
+
+  <body>
+    <nav class="nav">
+      <div class="nav-items">
+        <a href="/">
+          <div class="nav-title">台北一日遊</div>
+        </a>
+        <div class="menu">
+          <div class="menu-item">預定行程</div>
+          <div class="menu-item login-register"></div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dialog-mask"></div>
+    <div class="dialog-signin">
+      <div class="decorator-bar"></div>
+      <h3>登入會員帳號</h3>
+      <div class="icon-close">
+        <img src="{{ url_for('static', filename='img/icon_close.png') }}" />
+      </div>
+      <form action="">
+        <div class="form-group">
+          <input
+            type="email"
+            id="login-email"
+            name="email"
+            required
+            placeholder="輸入電子信箱"
+          />
+        </div>
+        <div class="form-group">
+          <input
+            type="password"
+            id="login-password"
+            name="password"
+            required
+            placeholder="輸入密碼"
+            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}"
+            title="密碼至少包含一個數字，一個小寫字母，一個大寫字母，一個特殊字符，並且至少有8個字符。"
+          />
+        </div>
+        <button class="login-button">登入帳戶</button>
+      </form>
+      <div class="login-message"></div>
+      <div class="register-link">還沒有帳戶？點此註冊</div>
+    </div>
+
+    <div class="dialog-signup">
+      <div class="decorator-bar"></div>
+      <h3>註冊會員帳號</h3>
+      <div class="icon-close">
+        <img src="{{ url_for('static', filename='img/icon_close.png') }}" />
+      </div>
+      <form action="">
+        <div class="form-group">
+          <input
+            type="name"
+            id="register-name"
+            name="name"
+            required
+            placeholder="輸入姓名"
+          />
+        </div>
+        <div class="form-group">
+          <input
+            type="email"
+            id="register-email"
+            name="email"
+            required
+            placeholder="輸入電子信箱"
+          />
+        </div>
+        <div class="form-group">
+          <input
+            type="password"
+            id="register-password"
+            name="password"
+            required
+            placeholder="輸入密碼"
+            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}"
+            title="密碼至少包含一個數字，一個小寫字母，一個大寫字母，一個特殊字符，並且至少有8個字符。"
+          />
+        </div>
+        <button class="register-button">註冊新帳戶</button>
+      </form>
+      <div class="register-message"></div>
+      <div class="login-link">已經有帳戶了？點此登入</div>
+    </div>
+
+    {% block content %}{% endblock %}
+
+    <div class="footer">
+      <div class="copyright">COPYRIGHT &copy; 2023 台北一日遊</div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/base.js') }}"></script>
+    {% block body_script %}{% endblock %}
+  </body>
+</html>

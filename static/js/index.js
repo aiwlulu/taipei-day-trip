@@ -2,9 +2,35 @@ document.addEventListener("DOMContentLoaded", function () {
   const searchForm = document.getElementById("search-bar");
   const inputField = document.getElementById("input-field");
   const attractionsContainer = document.querySelector(".attraction-group");
+  const attractionsEnd = document.querySelector(".attraction-end");
+  const mrtList = document.querySelector(".mrts-list");
+  const buttonLeft = document.querySelector(".button-left");
+  const buttonRight = document.querySelector(".button-right");
 
+  let mrts = [];
   let nextPage = 0;
   let loading = false;
+
+  const hostname = window.location.host;
+  const apiBaseUrl = `http://${hostname}/api`;
+
+  function fetchData(url) {
+    return fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .catch((error) => {
+        console.error("There was a problem with the fetch operation:", error);
+      });
+  }
 
   function clearAttractions() {
     attractionsContainer.innerHTML = "";
@@ -16,161 +42,134 @@ document.addEventListener("DOMContentLoaded", function () {
     loading = true;
     const keyword = inputField.value.trim();
 
-    const hostname = window.location.host;
-    const apiBaseUrl = `http://${hostname}/api`;
+    fetchData(
+      `${apiBaseUrl}/attractions?page=${nextPage}&keyword=${keyword}`
+    ).then((data) => {
+      if (data.data.length === 0) {
+        attractionsContainer.textContent = "沒有符合條件的結果";
+        nextPage = null;
+      } else {
+        data.data.forEach((attraction) => {
+          const attractionItem = document.createElement("div");
+          attractionItem.classList.add("attraction-item");
 
-    fetch(`${apiBaseUrl}/attractions?page=${nextPage}&keyword=${keyword}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.data.length === 0) {
-          attractionsContainer.textContent = "沒有符合條件的結果";
-          nextPage = null;
-        } else {
-          data.data.forEach((attraction) => {
-            const attractionItem = document.createElement("div");
-            attractionItem.classList.add("attraction-item");
+          attractionItem.addEventListener("click", () => {
+            const attractionId = attraction.id;
 
-            attractionItem.addEventListener("click", () => {
-              const attractionId = attraction.id;
-
-              window.location.href = `/attraction/${attractionId}`;
-            });
-
-            const mrtText = attraction.mrt ? attraction.mrt : "無鄰近捷運站";
-
-            attractionItem.innerHTML = `
-                          <img src="${attraction.images[0] || ""}" alt="">
-                          <div class="attr-name">${attraction.name}</div>
-                          <div class="attr-container">
-                              <div class="attr-mrt">${mrtText}</div>
-                              <div class="attr-category">${
-                                attraction.category
-                              }</div>
-                          </div>
-                      `;
-
-            attractionsContainer.appendChild(attractionItem);
+            window.location.href = `/attraction/${attractionId}`;
           });
 
-          nextPage = data.nextPage;
-        }
+          const mrtText = attraction.mrt ? attraction.mrt : "無鄰近捷運站";
 
-        loading = false;
-      })
-      .catch((error) => {
-        console.error("發生錯誤：", error);
-        loading = false;
-      });
+          attractionItem.innerHTML = `
+                        <img src="${attraction.images[0] || ""}" alt="">
+                        <div class="attr-name">${attraction.name}</div>
+                        <div class="attr-container">
+                            <div class="attr-mrt">${mrtText}</div>
+                            <div class="attr-category">${
+                              attraction.category
+                            }</div>
+                        </div>
+                    `;
+
+          attractionsContainer.appendChild(attractionItem);
+        });
+
+        nextPage = data.nextPage;
+      }
+
+      loading = false;
+    });
   }
 
-  searchForm.addEventListener("submit", function (e) {
-    e.preventDefault();
+  function renderMRTList() {
+    mrtList.innerHTML = "";
+
+    mrts.forEach((mrtName) => {
+      const mrtItem = document.createElement("div");
+      mrtItem.classList.add("mrt-item");
+      mrtItem.textContent = mrtName;
+      mrtList.appendChild(mrtItem);
+
+      mrtItem.addEventListener("click", () => {
+        inputField.value = mrtName;
+        searchForm.dispatchEvent(new Event("submit"));
+      });
+    });
+  }
+
+  function submitForm(event) {
+    event.preventDefault();
     clearAttractions();
     nextPage = 0;
     loadAttractions();
-  });
+  }
 
-  loadAttractions();
+  function scrollMrtList(direction) {
+    const mrtItemWidth = mrtList
+      .querySelector(".mrt-item")
+      .getBoundingClientRect().width;
+    const windowWidth = window.innerWidth;
+    let scrollDistance;
 
-  window.addEventListener("scroll", function () {
-    const scrollHeight = document.documentElement.scrollHeight;
-    const scrollTop = window.scrollY;
-    const clientHeight = document.documentElement.clientHeight;
-
-    if (scrollTop + clientHeight >= scrollHeight - 100 && !loading) {
-      loadAttractions();
+    if (windowWidth > 1200) {
+      scrollDistance = mrtItemWidth * 18;
+    } else if (windowWidth > 600) {
+      scrollDistance = mrtItemWidth * 8;
+    } else {
+      scrollDistance = mrtItemWidth * 3;
     }
-  });
-});
 
-const mrtList = document.querySelector(".mrts-list");
-const searchBar = document.querySelector("#input-field");
-const buttonLeft = document.querySelector(".button-left");
-const buttonRight = document.querySelector(".button-right");
-const form = document.getElementById("search-bar");
-
-let mrts = [];
-
-const hostname = window.location.host;
-const apiBaseUrl = `http://${hostname}/api`;
-
-fetch(`${apiBaseUrl}/mrts`, {
-  method: "GET",
-  headers: {
-    "Content-Type": "application/json",
-  },
-})
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
+    if (direction === "left") {
+      mrtList.scrollBy({
+        left: -scrollDistance,
+        behavior: "smooth",
+      });
+    } else if (direction === "right") {
+      mrtList.scrollBy({
+        left: scrollDistance,
+        behavior: "smooth",
+      });
     }
-    return response.json();
-  })
-  .then((data) => {
+  }
+
+  // IntersectionObserver API
+  const observerOptions = {
+    root: null,
+    rootMargin: "0px",
+    threshold: 1.0,
+  };
+
+  function observerCallback(entries, observer) {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting && !loading) {
+        loadAttractions();
+      }
+    });
+  }
+
+  fetchData(`${apiBaseUrl}/mrts`).then((data) => {
     if (data && data.data) {
       mrts = data.data;
       renderMRTList();
     } else {
       console.error("Invalid data received from the server");
     }
-  })
-  .catch((error) => {
-    console.error("There was a problem with the fetch operation:", error);
   });
 
-function renderMRTList() {
-  mrtList.innerHTML = "";
+  const observer = new IntersectionObserver(observerCallback, observerOptions);
 
-  mrts.forEach((mrtName) => {
-    const mrtItem = document.createElement("div");
-    mrtItem.classList.add("mrt-item");
-    mrtItem.textContent = mrtName;
-    mrtList.appendChild(mrtItem);
+  observer.observe(attractionsEnd);
 
-    mrtItem.addEventListener("click", () => {
-      searchBar.value = mrtName;
-      form.dispatchEvent(new Event("submit"));
-    });
+  searchForm.addEventListener("submit", submitForm);
+
+  buttonLeft.addEventListener("click", () => {
+    scrollMrtList("left");
   });
-}
 
-function submitForm(event) {
-  event.preventDefault();
-}
+  buttonRight.addEventListener("click", () => {
+    scrollMrtList("right");
+  });
 
-form.addEventListener("submit", submitForm);
-
-function scrollMrtList(direction) {
-  const mrtItem = document.querySelector(".mrt-item");
-  const mrtItemWidth = mrtItem.getBoundingClientRect().width;
-  const windowWidth = window.innerWidth;
-  let scrollDistance;
-
-  if (windowWidth > 1200) {
-    scrollDistance = mrtItemWidth * 18;
-  } else if (windowWidth > 600) {
-    scrollDistance = mrtItemWidth * 8;
-  } else {
-    scrollDistance = mrtItemWidth * 3;
-  }
-
-  if (direction === "left") {
-    mrtList.scrollBy({
-      left: -scrollDistance,
-      behavior: "smooth",
-    });
-  } else if (direction === "right") {
-    mrtList.scrollBy({
-      left: scrollDistance,
-      behavior: "smooth",
-    });
-  }
-}
-
-buttonLeft.addEventListener("click", () => {
-  scrollMrtList("left");
-});
-
-buttonRight.addEventListener("click", () => {
-  scrollMrtList("right");
+  loadAttractions();
 });
