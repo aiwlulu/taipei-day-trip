@@ -217,7 +217,7 @@ def register_user():
 
         cnx = cnxpool.get_connection()
         cursor = cnx.cursor()
-        cursor.execute("SELECT id FROM user WHERE email = %s", (email,))
+        cursor.execute("SELECT id FROM User WHERE email = %s", (email,))
         existing_user = cursor.fetchone()
         cursor.close()
         cnx.close()
@@ -251,7 +251,7 @@ def login_user():
 
         cnx = cnxpool.get_connection()
         cursor = cnx.cursor()
-        cursor.execute("SELECT id, name, password FROM user WHERE email = %s", (email,))
+        cursor.execute("SELECT id, name, password FROM User WHERE email = %s", (email,))
         user = cursor.fetchone()
         cursor.close()
         cnx.close()
