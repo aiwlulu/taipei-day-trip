@@ -16,7 +16,6 @@ const selectors = {
   loginEmail: "#login-email",
   loginPassword: "#login-password",
   loginMessage: ".login-message",
-  loginRegisterButton: ".menu-item.login-register",
 };
 
 const elements = {};
@@ -24,6 +23,49 @@ const elements = {};
 for (let key in selectors) {
   elements[key] = document.querySelector(selectors[key]);
 }
+
+// Loader
+window.addEventListener("load", function () {
+  let loaderWrapper = document.querySelector(".loader-wrapper");
+
+  setTimeout(function () {
+    loaderWrapper.style.display = "none";
+  }, 200);
+});
+
+// Check login status & Logout
+async function checkUserLoginStatus() {
+  const token = localStorage.getItem("token");
+  const logOut = document.querySelector(".logout");
+  const loginRegister = document.querySelector(".login-register");
+
+  if (token) {
+    const response = await fetch("/api/user/auth", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (data.data) {
+      logOut.style.display = "block";
+    } else {
+      loginRegister.style.display = "block";
+    }
+  } else {
+    loginRegister.style.display = "block";
+  }
+}
+
+const logOut = document.querySelector(".logout");
+logOut.addEventListener("click", function () {
+  localStorage.removeItem("token");
+  window.location.reload();
+});
+
+checkUserLoginStatus();
 
 function toggleDialog(dialog, isActive, maskDisplay) {
   dialog.classList.toggle("active", isActive);
@@ -77,9 +119,29 @@ elements.loginLink.addEventListener("click", function () {
 elements.registerButton.addEventListener("click", async function (event) {
   event.preventDefault();
 
-  const name = elements.registerName.value;
+  let name = elements.registerName.value;
   const email = elements.registerEmail.value;
   const password = elements.registerPassword.value;
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const passwordPattern = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}/;
+
+  name = name.trim();
+  if (name.length < 2) {
+    alert("姓名至少需要 2 個字元");
+    return;
+  }
+
+  if (!emailPattern.test(email)) {
+    alert("請輸入有效的電子信箱");
+    return;
+  }
+
+  if (!passwordPattern.test(password)) {
+    alert(
+      "密碼至少包含一個數字，一個小寫字母，一個大寫字母，一個特殊字符，並且至少有 8 個字元"
+    );
+    return;
+  }
 
   const response = await fetch("/api/user", {
     method: "POST",
@@ -107,6 +169,21 @@ elements.loginButton.addEventListener("click", async function (event) {
   const email = elements.loginEmail.value;
   const password = elements.loginPassword.value;
 
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const passwordPattern = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}/;
+
+  if (!emailPattern.test(email)) {
+    alert("請輸入有效的電子信箱");
+    return;
+  }
+
+  if (!passwordPattern.test(password)) {
+    alert(
+      "密碼至少包含一個數字，一個小寫字母，一個大寫字母，一個特殊字符，並且至少有 8 個字元"
+    );
+    return;
+  }
+
   const response = await fetch("/api/user/auth", {
     method: "PUT",
     headers: {
@@ -130,32 +207,37 @@ elements.loginButton.addEventListener("click", async function (event) {
   }
 });
 
-// Check login status & Logout
-async function checkUserLoginStatus() {
-  const token = localStorage.getItem("token");
+// bookingLink
+const bookingLink = document.querySelector(".booking");
 
-  if (token) {
-    const response = await fetch("/api/user/auth", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await response.json();
-
-    if (data.data) {
-      elements.loginRegisterButton.classList.add("logged-in");
-      elements.loginRegisterButton.addEventListener("click", function () {
-        localStorage.removeItem("token");
-        window.location.reload();
-      });
+bookingLink.addEventListener("click", async function () {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toggleDialog(elements.dialogSignin, true, "block");
     } else {
-      elements.loginRegisterButton.classList.remove("logged-in");
-    }
-  } else {
-    elements.loginRegisterButton.classList.remove("logged-in");
-  }
-}
+      const response = await fetch("/api/user/auth", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-checkUserLoginStatus();
+      const data = await response.json();
+
+      if (data.data) {
+        window.location.href = "/booking";
+      } else {
+        toggleDialog(elements.dialogSignin, true, "block");
+      }
+    }
+  } catch (error) {
+    console.error("發生錯誤：", error);
+  }
+});
+
+const path = window.location.pathname;
+const token = localStorage.getItem("token");
+if (!token && path.includes("/booking")) {
+  window.location.href = "/";
+}

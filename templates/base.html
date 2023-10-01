@@ -20,14 +20,19 @@
   </head>
 
   <body>
+    <div class="loader-wrapper">
+      <div class="loader"></div>
+    </div>
+
     <nav class="nav">
       <div class="nav-items">
         <a href="/">
           <div class="nav-title">台北一日遊</div>
         </a>
         <div class="menu">
-          <div class="menu-item">預定行程</div>
-          <div class="menu-item login-register"></div>
+          <div class="menu-item booking">預定行程</div>
+          <div class="menu-item login-register">登入 / 註冊</div>
+          <div class="menu-item logout">登出系統</div>
         </div>
       </div>
     </nav>
@@ -56,8 +61,6 @@
             name="password"
             required
             placeholder="輸入密碼"
-            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}"
-            title="密碼至少包含一個數字，一個小寫字母，一個大寫字母，一個特殊字符，並且至少有8個字符。"
           />
         </div>
         <button class="login-button">登入帳戶</button>
@@ -98,8 +101,6 @@
             name="password"
             required
             placeholder="輸入密碼"
-            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}"
-            title="密碼至少包含一個數字，一個小寫字母，一個大寫字母，一個特殊字符，並且至少有8個字符。"
           />
         </div>
         <button class="register-button">註冊新帳戶</button>

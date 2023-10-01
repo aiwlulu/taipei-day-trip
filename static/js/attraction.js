@@ -1,10 +1,13 @@
+let attractionId;
+let tourFee;
+
 // tourFee
 const morningRadio = document.getElementById("morning");
 const afternoonRadio = document.getElementById("afternoon");
 const tourFeeElement = document.getElementById("tour-fee");
 
 function updateTourFee() {
-  const tourFee = morningRadio.checked ? 2000 : 2500;
+  tourFee = morningRadio.checked ? 2000 : 2500;
   tourFeeElement.textContent = `新台幣 ${tourFee} 元`;
 }
 
@@ -25,7 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     const hostname = window.location.host;
     const apiBaseUrl = `http://${hostname}/api`;
-    const attractionId = getAttractionIdFromURL();
+    attractionId = getAttractionIdFromURL();
     const response = await fetch(`${apiBaseUrl}/attraction/${attractionId}`);
 
     if (!response.ok) {
@@ -138,3 +141,49 @@ async function initializeCarousel(images) {
     img.src = images[i];
   }
 }
+
+// startBooking
+const bookingForm = document.querySelector("#booking-form");
+
+bookingForm.addEventListener("submit", async function (event) {
+  event.preventDefault();
+
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toggleDialog(elements.dialogSignin, true, "block");
+    } else {
+      const dateInput = document.querySelector("#date-input");
+      const selectedDate = dateInput.value;
+      const selectedTime = document.querySelector(
+        'input[name="select-time"]:checked'
+      ).value;
+
+      const requestData = {
+        attractionId: attractionId,
+        date: selectedDate,
+        time: selectedTime,
+        price: tourFee,
+      };
+
+      const response = await fetch("/api/booking", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        window.location.href = "/booking";
+      } else {
+        console.error(data.message);
+      }
+    }
+  } catch (error) {
+    console.error("發生錯誤：", error);
+  }
+});

@@ -1,0 +1,223 @@
+body {
+  color: #666666;
+}
+
+.headline {
+  width: 80%;
+  max-width: 1000px;
+  margin: 94px auto 30px auto;
+  min-height: 24px;
+  font-size: 19px;
+  font-weight: 700;
+
+  @media (max-width: 360px) {
+    width: 95%;
+    max-width: 340px;
+  }
+}
+
+.no-booking {
+  width: 80%;
+  max-width: 1000px;
+  margin: 0 auto;
+  height: 24px;
+  margin-top: 30px;
+  display: none;
+
+  @media (max-width: 360px) {
+    width: 95%;
+    max-width: 340px;
+  }
+}
+
+.booking-container {
+  width: 80%;
+  max-width: 1000px;
+  margin: 0 auto;
+
+  @media (max-width: 360px) {
+    width: 95%;
+    max-width: 340px;
+  }
+}
+
+.booking-container hr {
+  width: 95vw;
+  max-width: 1200px;
+  margin-left: calc(50% - min(47.5vw, 600px));
+  border: 0;
+  background-color: #e8e8e8;
+  height: 1px;
+
+  @media (max-width: 360px) {
+    width: 340px;
+    margin-left: calc(50% - 170px);
+  }
+}
+
+.booking-container .booking-section {
+  margin-bottom: 40px;
+  display: flex;
+  position: relative;
+
+  @media (max-width: 900px) {
+    display: block;
+  }
+}
+
+.booking-container .booking-section .img-container {
+  width: 266px;
+  padding: 0 8px;
+  box-sizing: border-box;
+  margin-right: 22px;
+
+  @media (max-width: 900px) {
+    width: 90%;
+  }
+}
+
+.booking-container .booking-section .img-container img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.booking-container .booking-section .booking-info {
+  @media (max-width: 900px) {
+    margin-top: 15px;
+  }
+}
+
+.booking-container .booking-section .booking-info .icon-delete img {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  transition: all 0.1s ease-in;
+}
+
+.booking-container .booking-section .booking-info .icon-delete img:hover {
+  transform: scale(1.1);
+}
+
+.booking-container .booking-section .booking-info .booking-title {
+  color: #448899;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.booking-container .booking-section .booking-info .booking-detail {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.booking-container .booking-section .booking-info .booking-detail #date,
+#time,
+#price,
+#address {
+  font-weight: normal;
+}
+
+.booking-container .contact-form {
+  margin-top: 40px;
+}
+
+.booking-container .contact-form .contact-title {
+  height: 24px;
+  font-size: 19px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.booking-container .contact-form .form-group {
+  margin-bottom: 15px;
+}
+
+.booking-container .contact-form .form-group input {
+  width: 200px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px #e8e8e8 solid;
+  gap: 4px;
+  box-sizing: border-box;
+}
+
+.booking-container .contact-form .form-group input:focus {
+  outline: none;
+  border-color: #e8e8e8;
+  box-shadow: 0 0 10px #e8e8e8;
+  color: black;
+}
+
+.booking-container .contact-form p {
+  margin-bottom: 40px;
+}
+
+.booking-container .payment {
+  margin: 40px auto;
+}
+
+.booking-container .payment .payment-title {
+  height: 24px;
+  font-size: 19px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.booking-container .payment .form-group {
+  margin-bottom: 15px;
+}
+
+.booking-container .payment .form-group input {
+  width: 200px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px #e8e8e8 solid;
+  gap: 4px;
+  box-sizing: border-box;
+}
+
+.booking-container .payment .form-group input:focus {
+  outline: none;
+  border-color: #e8e8e8;
+  box-shadow: 0 0 10px #e8e8e8;
+  color: black;
+}
+
+.booking-container .confirm-section {
+  height: 100px;
+  margin: 40px auto 40px auto;
+  position: relative;
+}
+
+.booking-container .confirm-section .total-price {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-weight: 700;
+}
+
+.booking-container .confirm-section button {
+  position: absolute;
+  top: 38px;
+  right: 0;
+  background: #448899;
+  border-radius: 5px;
+  border: none;
+  text-align: center;
+  color: white;
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 16px;
+  padding: 10px 20px;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: all 0.1s ease-in;
+}
+
+.booking-container .confirm-section button:hover {
+  transform: scale(0.98);
+}
