@@ -1,0 +1,125 @@
+{% extends 'base.html' %} {% block stylesheet %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/booking.css') }}"
+/>
+{% endblock %} {% block content %}
+
+<div class="headline">
+  <span>您好，</span>
+  <span class="username" id="username"></span>
+  <span>，待預訂的行程如下：</span>
+</div>
+
+<div class="no-booking">目前沒有任何待預訂的行程</div>
+
+<div class="booking-container">
+  <div class="booking-section">
+    <div class="img-container">
+      <img id="attraction-image" />
+    </div>
+    <div class="booking-info">
+      <div class="icon-delete">
+        <img src="{{ url_for('static', filename='img/icon_delete.png') }}" />
+      </div>
+      <div class="booking-title">
+        台北一日遊：<span id="attraction-name"></span>
+      </div>
+      <div class="booking-detail">
+        <span class="date">日期：</span>
+        <span id="date"></span>
+      </div>
+      <div class="booking-detail">
+        <span class="time">時間：</span>
+        <span id="time"></span>
+      </div>
+      <div class="booking-detail">
+        <span class="price">費用：</span>
+        <span id="price"></span>
+      </div>
+      <div class="booking-detail">
+        <span class="address">地點：</span>
+        <span id="address"></span>
+      </div>
+    </div>
+  </div>
+
+  <hr />
+
+  <div class="contact-form">
+    <div class="contact-title">您的聯絡資訊</div>
+    <div class="form-group">
+      <label for="contactName">聯絡姓名：</label>
+      <input type="text" id="contactName" name="contactName" required />
+    </div>
+    <div class="form-group">
+      <label for="contactEmail">聯絡信箱：</label>
+      <input type="email" id="contactEmail" name="contactEmail" required />
+    </div>
+    <div class="form-group">
+      <label for="contactPhone">手機號碼：</label>
+      <input
+        type="tel"
+        id="contactPhone"
+        name="contactPhone"
+        pattern="[0-9]{10}"
+        placeholder="09xxxxxxxx"
+        maxlength="10"
+        required
+      />
+    </div>
+    <p>
+      請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。
+    </p>
+  </div>
+
+  <hr />
+
+  <div class="payment">
+    <div class="payment-title">信用卡付款資訊</div>
+    <div class="form-group">
+      <label for="cardNumber">卡片號碼：</label>
+      <input
+        type="text"
+        id="cardNumber"
+        name="cardNumber"
+        placeholder="**** **** **** ****"
+        maxlength="19"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="expirationDate">過期時間：</label>
+      <input
+        type="text"
+        id="expirationDate"
+        name="expirationDate"
+        placeholder="MM / YY"
+        maxlength="7"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="cvv">驗證密碼：</label>
+      <input
+        type="text"
+        id="cvv"
+        name="cvv"
+        placeholder="CVV"
+        maxlength="3"
+        required
+      />
+    </div>
+  </div>
+
+  <hr />
+
+  <div class="confirm-section">
+    <div class="total-price" id="total-price"></div>
+    <button>確認訂購並付款</button>
+  </div>
+</div>
+
+{% endblock %} {% block body_script %}
+<script src="{{ url_for('static', filename='js/booking.js') }}"></script>
+{% endblock %}
