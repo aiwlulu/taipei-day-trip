@@ -1,0 +1,23 @@
+.container {
+  width: 80%;
+  margin: 50px auto;
+  text-align: center;
+}
+
+.container .success-message {
+  color: #666666;
+  font-size: 1.2em;
+  margin-top: 100px;
+}
+
+.container .order-number {
+  color: #448899;
+  font-size: 1.5em;
+  margin-top: 30px;
+}
+
+.container .reminder {
+  color: #666666;
+  font-size: 1.2em;
+  margin-top: 30px;
+}

@@ -1,4 +1,5 @@
 const bookingSection = document.querySelector(".booking-container");
+let attractionId;
 const attractionImage = document.getElementById("attraction-image");
 const attractionName = document.getElementById("attraction-name");
 const attractionAddress = document.getElementById("address");
@@ -68,7 +69,7 @@ async function getBookings() {
 
     if (data.data && data.data.length > 0) {
       const bookingData = data.data[0];
-
+      attractionId = bookingData.attraction_id;
       attractionImage.src = bookingData.attraction_image;
       attractionName.textContent = bookingData.attraction_name;
       attractionAddress.textContent = bookingData.attraction_address;
@@ -131,21 +132,157 @@ async function deleteBooking() {
 
 deleteIcon.addEventListener("click", deleteBooking);
 
-// cardFormat
-cardNumber.addEventListener("input", function () {
-  this.value = this.value
-    .replace(/\D/g, "")
-    .replace(/(\d{4})/g, "$1 ")
-    .trim();
+// TapPay
+TPDirect.setupSDK(
+  137172,
+  "app_RuNBDTN1soYHtkkY3kurGvYm77OPjTxWcNLgLm7wHfgxvCZ6gQy2McdyL18a",
+  "sandbox"
+);
+
+TPDirect.card.setup({
+  fields: {
+    number: {
+      element: "#card-number",
+      placeholder: "**** **** **** ****",
+    },
+    expirationDate: {
+      element: document.getElementById("card-expiration-date"),
+      placeholder: "MM / YY",
+    },
+    ccv: {
+      element: "#card-ccv",
+      placeholder: "CVV",
+    },
+  },
+  styles: {
+    input: {
+      color: "gray",
+    },
+    ".valid": {
+      color: "green",
+    },
+    ".invalid": {
+      color: "red",
+    },
+  },
+  isMaskCreditCardNumber: true,
+  maskCreditCardNumberRange: {
+    beginIndex: 6,
+    endIndex: 11,
+  },
 });
 
-expirationDate.addEventListener("input", function () {
-  this.value = this.value
-    .replace(/\D/g, "")
-    .replace(/(\d{2})/, "$1 / ")
-    .trim();
+// submit
+const submitButton = document.getElementById("payment-button");
+let isButtonDisabled = false;
+
+submitButton.addEventListener("click", async function (event) {
+  event.preventDefault();
+
+  if (isButtonDisabled) {
+    return;
+  }
+
+  const contactNameValue = contactName.value.trim();
+  const contactEmailValue = contactEmail.value.trim();
+  const contactPhoneValue = contactPhone.value.trim();
+
+  if (!contactNameValue || !contactEmailValue || !contactPhoneValue) {
+    alert("請填寫所有聯絡資訊");
+    return;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneRegex = /^[0-9]{10}$/;
+
+  if (
+    !emailRegex.test(contactEmailValue) ||
+    !phoneRegex.test(contactPhoneValue)
+  ) {
+    alert("請輸入有效的聯絡信箱和手機號碼");
+    return;
+  }
+
+  isButtonDisabled = true;
+
+  try {
+    const primeResult = await getTappayPrime();
+    if (primeResult.status !== 0) {
+      alert("獲取 prime 時出錯：" + primeResult.msg);
+      isButtonDisabled = false;
+      return;
+    }
+
+    const priceValue = parseFloat(
+      price.textContent.replace("新台幣", "").replace("元", "").trim()
+    );
+
+    const orderData = {
+      prime: primeResult.card.prime,
+      order: {
+        attractionId: attractionId,
+        date: date.textContent,
+        time: time.textContent,
+        price: priceValue,
+        contact: {
+          name: contactNameValue,
+          email: contactEmailValue,
+          phone: contactPhoneValue,
+        },
+      },
+    };
+
+    const createOrderResult = await createOrder(orderData);
+
+    if (createOrderResult.message === "Order created successfully") {
+      window.location.href = `/thankyou?number=${createOrderResult.order_number}`;
+    } else {
+      alert("訂單建立失敗：" + createOrderResult.message);
+    }
+  } catch (error) {
+    console.error("發生錯誤：", error);
+    alert("發生錯誤，請稍後再試");
+  } finally {
+    isButtonDisabled = false;
+  }
 });
 
-cvv.addEventListener("input", function () {
-  this.value = this.value.replace(/\D/g, "").substr(0, 3);
+async function getTappayPrime() {
+  return new Promise((resolve) => {
+    TPDirect.card.getPrime((result) => {
+      resolve(result);
+    });
+  });
+}
+
+async function createOrder(orderData) {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("未登入系統，拒絕存取");
+  }
+
+  const response = await fetch("/api/orders", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(orderData),
+  });
+
+  if (!response.ok) {
+    const errorMessage = await response.json();
+    throw new Error(errorMessage.message);
+  }
+
+  return response.json();
+}
+
+TPDirect.card.onUpdate(function (update) {
+  if (update.canGetPrime) {
+    submitButton.removeAttribute("disabled");
+  } else {
+    submitButton.setAttribute("disabled", true);
+  }
 });

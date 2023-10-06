@@ -1,0 +1,21 @@
+{% extends 'base.html' %} {% block stylesheet %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/thankyou.css') }}"
+/>
+{% endblock %} {% block content %}
+<div class="container">
+  <div class="success-message">行程預定成功</div>
+  <div class="order-number">
+    訂單編號
+    <p id="order-number"></p>
+  </div>
+  <div class="reminder">請記得保存編號，方便查詢相關資訊</div>
+</div>
+
+<div>
+  <canvas id="canvas"></canvas>
+</div>
+{% endblock %} {% block body_script %}
+<script src="{{ url_for('static', filename='js/thankyou.js') }}"></script>
+{% endblock %}
