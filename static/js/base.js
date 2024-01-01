@@ -251,7 +251,7 @@ bookingLink.addEventListener("click", async function () {
 
 const path = window.location.pathname;
 const token = localStorage.getItem("token");
-if (!token && path.includes("/booking")) {
+if (!token && (path.includes("/booking") || path.includes("/thankyou"))) {
   window.location.href = "/";
 }
 
