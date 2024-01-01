@@ -161,50 +161,34 @@ TPDirect.card.setup({
   },
 });
 
-// submit
+// Submit
 const submitButton = document.getElementById("payment-button");
-let isButtonDisabled = false;
 
-submitButton.addEventListener("click", async function (event) {
+submitButton.addEventListener("click", async (event) => {
   event.preventDefault();
-
-  if (isButtonDisabled) {
-    return;
-  }
+  if (submitButton.disabled) return;
 
   const contactNameValue = contactName.value.trim();
   const contactEmailValue = contactEmail.value.trim();
   const contactPhoneValue = contactPhone.value.trim();
 
   if (!contactNameValue || !contactEmailValue || !contactPhoneValue) {
-    alert("請填寫所有聯絡資訊");
-    return;
+    return alert("請填寫所有聯絡資訊");
   }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const phoneRegex = /^[0-9]{10}$/;
 
   if (
-    !emailRegex.test(contactEmailValue) ||
-    !phoneRegex.test(contactPhoneValue)
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmailValue) ||
+    !/^[0-9]{10}$/.test(contactPhoneValue)
   ) {
-    alert("請輸入有效的聯絡信箱和手機號碼");
-    return;
+    return alert("請輸入有效的聯絡信箱和手機號碼");
   }
 
-  isButtonDisabled = true;
+  submitButton.disabled = true;
 
   try {
     const primeResult = await getTappayPrime();
-    if (primeResult.status !== 0) {
-      alert("獲取 prime 時出錯：" + primeResult.msg);
-      isButtonDisabled = false;
-      return;
-    }
-
-    const priceValue = parseFloat(
-      price.textContent.replace("新台幣", "").replace("元", "").trim()
-    );
+    if (primeResult.status !== 0)
+      throw new Error("獲取 prime 時出錯：" + primeResult.msg);
 
     const orderData = {
       prime: primeResult.card.prime,
@@ -212,7 +196,7 @@ submitButton.addEventListener("click", async function (event) {
         attractionId: attractionId,
         date: date.textContent,
         time: time.textContent,
-        price: priceValue,
+        price: parseFloat(price.textContent.replace(/新台幣|元|\s/g, "")),
         contact: {
           name: contactNameValue,
           email: contactEmailValue,
@@ -222,34 +206,26 @@ submitButton.addEventListener("click", async function (event) {
     };
 
     const createOrderResult = await createOrder(orderData);
-
-    if (createOrderResult.message === "Order created successfully") {
-      window.location.href = `/thankyou?number=${createOrderResult.order_number}`;
-    } else {
-      alert("訂單建立失敗：" + createOrderResult.message);
+    if (createOrderResult.message !== "Order created successfully") {
+      throw new Error("訂單建立失敗：" + createOrderResult.message);
     }
+
+    window.location.href = `/thankyou?number=${createOrderResult.order_number}`;
   } catch (error) {
     console.error("發生錯誤：", error);
-    alert("發生錯誤，請稍後再試");
+    alert(error.message);
   } finally {
-    isButtonDisabled = false;
+    submitButton.disabled = false;
   }
 });
 
 async function getTappayPrime() {
-  return new Promise((resolve) => {
-    TPDirect.card.getPrime((result) => {
-      resolve(result);
-    });
-  });
+  return new Promise((resolve) => TPDirect.card.getPrime(resolve));
 }
 
 async function createOrder(orderData) {
   const token = localStorage.getItem("token");
-
-  if (!token) {
-    throw new Error("未登入系統，拒絕存取");
-  }
+  if (!token) throw new Error("未登入系統，拒絕存取");
 
   const response = await fetch("/api/orders", {
     method: "POST",
@@ -268,10 +244,6 @@ async function createOrder(orderData) {
   return response.json();
 }
 
-TPDirect.card.onUpdate(function (update) {
-  if (update.canGetPrime) {
-    submitButton.removeAttribute("disabled");
-  } else {
-    submitButton.setAttribute("disabled", true);
-  }
+TPDirect.card.onUpdate((update) => {
+  submitButton.disabled = !update.canGetPrime;
 });
