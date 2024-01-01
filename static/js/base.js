@@ -17,6 +17,7 @@ const selectors = {
   loginPassword: "#login-password",
   loginMessage: ".login-message",
 };
+let isAuthChecked = false;
 
 const elements = {};
 
@@ -33,8 +34,22 @@ window.addEventListener("load", function () {
   }, 200);
 });
 
+function storeUserInfo(userInfo) {
+  localStorage.setItem("userInfo", JSON.stringify(userInfo));
+}
+
+function clearUserInfo() {
+  localStorage.removeItem("userInfo");
+}
+
 // Check login status & Logout
 window.checkUserLoginStatus = async function () {
+  if (isAuthChecked) {
+    return;
+  }
+
+  isAuthChecked = true;
+
   const token = localStorage.getItem("token");
   const logOut = document.querySelector(".logout");
   const loginRegister = document.querySelector(".login-register");
@@ -55,6 +70,9 @@ window.checkUserLoginStatus = async function () {
       const data = await response.json();
 
       if (data.data) {
+        const userData = data.data;
+        storeUserInfo(userData);
+
         logOut.style.display = "block";
         loginRegister.style.display = "none";
       } else {
@@ -73,6 +91,7 @@ window.checkUserLoginStatus = async function () {
 const logOut = document.querySelector(".logout");
 logOut.addEventListener("click", function () {
   localStorage.removeItem("token");
+  clearUserInfo();
   window.location.reload();
 });
 

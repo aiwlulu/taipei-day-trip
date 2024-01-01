@@ -18,29 +18,14 @@ const deleteIcon = document.querySelector(".icon-delete");
 // UserInfo
 async function getUserInfo() {
   try {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    if (!userInfo) {
       return;
     }
 
-    const response = await fetch("/api/user/auth", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error：${response.status} ${response.statusText}`);
-    }
-
-    const data = await response.json();
-
-    if (data.data) {
-      username.textContent = data.data.name;
-      contactName.value = data.data.name;
-      contactEmail.value = data.data.email;
-    }
+    username.textContent = userInfo.name;
+    contactName.value = userInfo.name;
+    contactEmail.value = userInfo.email;
   } catch (error) {
     console.error("發生錯誤：", error);
   }
@@ -97,6 +82,10 @@ async function getBookings() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  if (window.checkUserLoginStatus && !window.userLoginStatusChecked) {
+    window.checkUserLoginStatus();
+    window.userLoginStatusChecked = true;
+  }
   getBookings();
   getUserInfo();
 });
@@ -131,15 +120,6 @@ async function deleteBooking() {
 }
 
 deleteIcon.addEventListener("click", deleteBooking);
-
-document.addEventListener("DOMContentLoaded", () => {
-  if (window.checkUserLoginStatus && !window.userLoginStatusChecked) {
-    window.checkUserLoginStatus();
-    window.userLoginStatusChecked = true;
-  }
-  getBookings();
-  getUserInfo();
-});
 
 // TapPay
 TPDirect.setupSDK(
