@@ -44,13 +44,10 @@ def thankyou():
 def get_attractions():
     page = request.args.get('page', default=0, type=int)
     keyword = request.args.get('keyword', default=None, type=str)
-
     limit = 12
     offset = page * limit
-
     cnx = cnxpool.get_connection()
     cursor = cnx.cursor()
-
     query = """
             SELECT
                 a.id,
@@ -467,7 +464,7 @@ def create_orders():
 
         # TapPay
         tappay_api_url = "https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime"
-        tappay_api_key = "partner_EiuIB8Mn2MuZYUy2phlJVrin3TSoSGPpmboupeBRmOqlYcN0vWQ3lixT"
+        tappay_api_key = os.getenv('TAPPAY_API_KEY')
 
         tappay_data = {
             "prime": prime,
