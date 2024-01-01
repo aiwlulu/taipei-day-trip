@@ -252,3 +252,10 @@ const token = localStorage.getItem("token");
 if (!token && path.includes("/booking")) {
   window.location.href = "/";
 }
+
+// Demo Account
+const demoAccountButton = document.querySelector(".demo-account-button");
+demoAccountButton.addEventListener("click", function () {
+  elements.loginEmail.value = "1@1.com";
+  elements.loginPassword.value = "1qaz@WSX";
+});
