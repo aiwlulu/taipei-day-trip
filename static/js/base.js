@@ -40,18 +40,29 @@ async function checkUserLoginStatus() {
   const loginRegister = document.querySelector(".login-register");
 
   if (token) {
-    const response = await fetch("/api/user/auth", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      const response = await fetch("/api/user/auth", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    const data = await response.json();
+      if (!response.ok) {
+        throw new Error("Token invalid or expired");
+      }
 
-    if (data.data) {
-      logOut.style.display = "block";
-    } else {
+      const data = await response.json();
+
+      if (data.data) {
+        logOut.style.display = "block";
+        loginRegister.style.display = "none";
+      } else {
+        throw new Error("No user data returned");
+      }
+    } catch (error) {
+      console.error("Token validation error:", error);
+      localStorage.removeItem("token");
       loginRegister.style.display = "block";
     }
   } else {
