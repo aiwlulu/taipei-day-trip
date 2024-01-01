@@ -147,7 +147,7 @@ body {
 
 .booking-container .contact-form .form-group input:focus {
   outline: none;
-  border-color: #e8e8e8;
+  border: 2px solid #448899;
   box-shadow: 0 0 10px #e8e8e8;
   color: black;
 }
@@ -181,6 +181,10 @@ body {
   box-sizing: border-box;
   margin-left: 5px;
   height: 37.5px;
+}
+
+.booking-container .payment .form-group .tappay-field-focus {
+  border: 2px solid #448899;
 }
 
 .booking-container .confirm-section {

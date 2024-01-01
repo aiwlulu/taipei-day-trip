@@ -15,7 +15,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgb(255, 255, 255);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -91,7 +91,7 @@ body {
 }
 
 .nav .menu .menu-item:hover {
-  color: #000000;
+  color: #448899;
 }
 
 .dialog-mask {
@@ -170,11 +170,8 @@ body {
   margin-bottom: 10px;
 }
 
-.dialog-signin form .form-group input[type="email"],
-.dialog-signin form .form-group input[type="password"],
-.dialog-signup form .form-group input[type="name"],
-.dialog-signup form .form-group input[type="email"],
-.dialog-signup form .form-group input[type="password"] {
+.dialog-signin form .form-group input,
+.dialog-signup form .form-group input {
   width: 100%;
   color: #757575;
   font-size: 16px;
@@ -182,6 +179,12 @@ body {
   padding: 15px;
   border: 1px #cccccc solid;
   border-radius: 5px;
+}
+
+.dialog-signin form .form-group input:focus,
+.dialog-signup form .form-group input:focus {
+  outline: none;
+  border: 2px solid #448899;
 }
 
 .dialog-signin .login-button,

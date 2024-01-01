@@ -133,6 +133,7 @@
 
 .main .list-bar .mrts-list .mrt-item:hover {
   color: #000000;
+  cursor: pointer;
 }
 
 .main .list-bar .button-left {
@@ -236,4 +237,13 @@
   display: flex;
   justify-content: space-between;
   padding: 10px;
+}
+
+#loader-container {
+  display: flex;
+  justify-content: center;
+}
+
+#loader {
+  display: none;
 }
