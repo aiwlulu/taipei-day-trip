@@ -132,6 +132,15 @@ async function deleteBooking() {
 
 deleteIcon.addEventListener("click", deleteBooking);
 
+document.addEventListener("DOMContentLoaded", () => {
+  if (window.checkUserLoginStatus && !window.userLoginStatusChecked) {
+    window.checkUserLoginStatus();
+    window.userLoginStatusChecked = true;
+  }
+  getBookings();
+  getUserInfo();
+});
+
 // TapPay
 TPDirect.setupSDK(
   137172,

@@ -34,7 +34,7 @@ window.addEventListener("load", function () {
 });
 
 // Check login status & Logout
-async function checkUserLoginStatus() {
+window.checkUserLoginStatus = async function () {
   const token = localStorage.getItem("token");
   const logOut = document.querySelector(".logout");
   const loginRegister = document.querySelector(".login-register");
@@ -68,7 +68,7 @@ async function checkUserLoginStatus() {
   } else {
     loginRegister.style.display = "block";
   }
-}
+};
 
 const logOut = document.querySelector(".logout");
 logOut.addEventListener("click", function () {
@@ -76,7 +76,9 @@ logOut.addEventListener("click", function () {
   window.location.reload();
 });
 
-checkUserLoginStatus();
+document.addEventListener("DOMContentLoaded", (event) => {
+  checkUserLoginStatus();
+});
 
 function toggleDialog(dialog, isActive, maskDisplay) {
   dialog.classList.toggle("active", isActive);
