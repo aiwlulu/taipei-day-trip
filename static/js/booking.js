@@ -164,59 +164,54 @@ TPDirect.card.setup({
 // Submit
 const submitButton = document.getElementById("payment-button");
 
-submitButton.addEventListener("click", async (event) => {
-  event.preventDefault();
-  if (submitButton.disabled) return;
-
+submitButton.addEventListener("click", () => {
   const contactNameValue = contactName.value.trim();
   const contactEmailValue = contactEmail.value.trim();
   const contactPhoneValue = contactPhone.value.trim();
 
   if (!contactNameValue || !contactEmailValue || !contactPhoneValue) {
-    return alert("請填寫所有聯絡資訊");
-  }
-
-  if (
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmailValue) ||
-    !/^[0-9]{10}$/.test(contactPhoneValue)
-  ) {
-    return alert("請輸入有效的聯絡信箱和手機號碼");
+    return;
   }
 
   submitButton.disabled = true;
 
-  try {
-    const primeResult = await getTappayPrime();
-    if (primeResult.status !== 0)
-      throw new Error("獲取 prime 時出錯：" + primeResult.msg);
+  getTappayPrime()
+    .then((primeResult) => {
+      if (primeResult.status !== 0) {
+        throw new Error("獲取 prime 時出錯：" + primeResult.msg);
+      }
 
-    const orderData = {
-      prime: primeResult.card.prime,
-      order: {
-        attractionId: attractionId,
-        date: date.textContent,
-        time: time.textContent,
-        price: parseFloat(price.textContent.replace(/新台幣|元|\s/g, "")),
-        contact: {
-          name: contactNameValue,
-          email: contactEmailValue,
-          phone: contactPhoneValue,
+      const orderData = {
+        prime: primeResult.card.prime,
+        order: {
+          attractionId: attractionId,
+          date: date.textContent,
+          time: time.textContent,
+          price: parseFloat(price.textContent.replace(/新台幣|元|\s/g, "")),
+          contact: {
+            name: contactNameValue,
+            email: contactEmailValue,
+            phone: contactPhoneValue,
+          },
         },
-      },
-    };
+      };
 
-    const createOrderResult = await createOrder(orderData);
-    if (createOrderResult.message !== "Order created successfully") {
-      throw new Error("訂單建立失敗：" + createOrderResult.message);
-    }
+      return createOrder(orderData);
+    })
+    .then((createOrderResult) => {
+      if (createOrderResult.message !== "Order created successfully") {
+        throw new Error("訂單建立失敗：" + createOrderResult.message);
+      }
 
-    window.location.href = `/thankyou?number=${createOrderResult.order_number}`;
-  } catch (error) {
-    console.error("發生錯誤：", error);
-    alert(error.message);
-  } finally {
-    submitButton.disabled = false;
-  }
+      window.location.href = `/thankyou?number=${createOrderResult.order_number}`;
+    })
+    .catch((error) => {
+      console.error("發生錯誤：", error);
+      alert(error.message);
+    })
+    .finally(() => {
+      submitButton.disabled = false;
+    });
 });
 
 async function getTappayPrime() {
