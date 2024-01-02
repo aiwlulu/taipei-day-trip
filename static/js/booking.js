@@ -163,55 +163,72 @@ TPDirect.card.setup({
 
 // Submit
 const submitButton = document.getElementById("payment-button");
+const bookingForm = document.getElementById("booking-form");
 
-submitButton.addEventListener("click", () => {
+submitButton.addEventListener("click", (event) => {
+  if (!bookingForm.checkValidity()) {
+    return;
+  }
+  event.preventDefault();
+  submitButton.disabled = true;
+
+  const tappayStatus = TPDirect.card.getTappayFieldsStatus();
   const contactNameValue = contactName.value.trim();
   const contactEmailValue = contactEmail.value.trim();
   const contactPhoneValue = contactPhone.value.trim();
 
-  if (!contactNameValue || !contactEmailValue || !contactPhoneValue) {
-    return;
-  }
+  if (
+    tappayStatus.status.ccv === 1 ||
+    tappayStatus.status.expiry === 1 ||
+    tappayStatus.status.number === 1
+  ) {
+    submitButton.disabled = false;
+    alert("信用卡資料未填妥");
+  } else if (
+    tappayStatus.status.ccv === 2 ||
+    tappayStatus.status.expiry === 2 ||
+    tappayStatus.status.number === 2
+  ) {
+    submitButton.disabled = false;
+    alert("信用卡資料填寫有誤");
+  } else {
+    getTappayPrime()
+      .then((primeResult) => {
+        if (primeResult.status !== 0) {
+          throw new Error("獲取 prime 時出錯：" + primeResult.msg);
+        }
 
-  submitButton.disabled = true;
-
-  getTappayPrime()
-    .then((primeResult) => {
-      if (primeResult.status !== 0) {
-        throw new Error("獲取 prime 時出錯：" + primeResult.msg);
-      }
-
-      const orderData = {
-        prime: primeResult.card.prime,
-        order: {
-          attractionId: attractionId,
-          date: date.textContent,
-          time: time.textContent,
-          price: parseFloat(price.textContent.replace(/新台幣|元|\s/g, "")),
-          contact: {
-            name: contactNameValue,
-            email: contactEmailValue,
-            phone: contactPhoneValue,
+        const orderData = {
+          prime: primeResult.card.prime,
+          order: {
+            attractionId: attractionId,
+            date: date.textContent,
+            time: time.textContent,
+            price: parseFloat(price.textContent.replace(/新台幣|元|\s/g, "")),
+            contact: {
+              name: contactNameValue,
+              email: contactEmailValue,
+              phone: contactPhoneValue,
+            },
           },
-        },
-      };
+        };
 
-      return createOrder(orderData);
-    })
-    .then((createOrderResult) => {
-      if (createOrderResult.message !== "Order created successfully") {
-        throw new Error("訂單建立失敗：" + createOrderResult.message);
-      }
+        return createOrder(orderData);
+      })
+      .then((createOrderResult) => {
+        if (createOrderResult.message !== "Order created successfully") {
+          throw new Error("訂單建立失敗：" + createOrderResult.message);
+        }
 
-      window.location.href = `/thankyou?number=${createOrderResult.order_number}`;
-    })
-    .catch((error) => {
-      console.error("發生錯誤：", error);
-      alert(error.message);
-    })
-    .finally(() => {
-      submitButton.disabled = false;
-    });
+        window.location.href = `/thankyou?number=${createOrderResult.order_number}`;
+      })
+      .catch((error) => {
+        console.error("發生錯誤：", error);
+      })
+      .finally(() => {
+        submitButton.disabled = false;
+      });
+  }
 });
 
 async function getTappayPrime() {
