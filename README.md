@@ -33,16 +33,16 @@ You can click the `【使用測試帳號密碼】` button to automatically popul
 ## Features
 
 1️⃣ Infinite scroll
-![Infinite scroll](https://hackmd.io/_uploads/HkDmgEHdp.gif)
+![Infinite scroll](https://github.com/aiwlulu/taipei-day-trip/blob/develop/static/img/readme/Infinite_scroll.gif?raw=true)
 
 2️⃣ Search for attractions by keywords or MRT
-![Search for attractions by keywords or MRT](https://hackmd.io/_uploads/SkuAlNrdp.gif)
+![Search for attractions by keywords or MRT](https://github.com/aiwlulu/taipei-day-trip/blob/develop/static/img/readme/Search%20for%20attractions_by_keywords_or_MRT.gif?raw=true)
 
 3️⃣ Book a trip
-![Book a trip](https://hackmd.io/_uploads/ryakRSSOT.gif)
+![Book a trip](https://github.com/aiwlulu/taipei-day-trip/blob/develop/static/img/readme/Book_a_trip.gif?raw=true)
 
 4️⃣ Payment flow via TapPay
-![Payment flow via TapPay](https://hackmd.io/_uploads/rJjFRrSup.gif)
+![Payment flow via TapPay](https://github.com/aiwlulu/taipei-day-trip/blob/develop/static/img/readme/Payment_flow_via_TapPay.gif?raw=true)
 
 5️⃣ View history orders
 ![image](https://hackmd.io/_uploads/SJ8iArB_T.png)
@@ -50,7 +50,7 @@ You can click the `【使用測試帳號密碼】` button to automatically popul
 ![image](https://hackmd.io/_uploads/HJQnABHdp.png)
 
 6️⃣ Responsive Web Design (RWD)
-![Responsive Web Design (RWD)](https://hackmd.io/_uploads/Hy5NJLH_T.gif)
+![Responsive Web Design (RWD)](https://github.com/aiwlulu/taipei-day-trip/blob/develop/static/img/readme/RWD.gif?raw=true)
 
 ---
 
