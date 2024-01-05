@@ -46,80 +46,63 @@
 
   <hr />
 
-  <div class="contact-form">
-    <div class="contact-title">您的聯絡資訊</div>
-    <div class="form-group">
-      <label for="contactName">聯絡姓名：</label>
-      <input type="text" id="contactName" name="contactName" required />
+  <form action="" class="booking-form" id="booking-form">
+    <div class="contact-form">
+      <div class="contact-title">您的聯絡資訊</div>
+      <div class="form-group">
+        <label for="contactName">聯絡姓名：</label>
+        <input type="text" id="contactName" name="contactName" required />
+      </div>
+      <div class="form-group">
+        <label for="contactEmail">聯絡信箱：</label>
+        <input type="email" id="contactEmail" name="contactEmail" required />
+      </div>
+      <div class="form-group">
+        <label for="contactPhone">手機號碼：</label>
+        <input
+          type="tel"
+          id="contactPhone"
+          name="contactPhone"
+          placeholder="09xxxxxxxx"
+          pattern="09\d{8}"
+          title="格式為 09 開頭後接 8 位數字"
+          maxlength="10"
+          required
+        />
+      </div>
+      <p>
+        請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。
+      </p>
     </div>
-    <div class="form-group">
-      <label for="contactEmail">聯絡信箱：</label>
-      <input type="email" id="contactEmail" name="contactEmail" required />
-    </div>
-    <div class="form-group">
-      <label for="contactPhone">手機號碼：</label>
-      <input
-        type="tel"
-        id="contactPhone"
-        name="contactPhone"
-        pattern="[0-9]{10}"
-        placeholder="09xxxxxxxx"
-        maxlength="10"
-        required
-      />
-    </div>
-    <p>
-      請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。
-    </p>
-  </div>
 
-  <hr />
+    <hr />
 
-  <div class="payment">
-    <div class="payment-title">信用卡付款資訊</div>
-    <div class="form-group">
-      <label for="cardNumber">卡片號碼：</label>
-      <input
-        type="text"
-        id="cardNumber"
-        name="cardNumber"
-        placeholder="**** **** **** ****"
-        maxlength="19"
-        required
-      />
+    <div class="payment">
+      <div class="payment-title">信用卡付款資訊</div>
+      <div class="form-group">
+        <div>卡片號碼：</div>
+        <div class="tpfield" id="card-number"></div>
+      </div>
+      <div class="form-group">
+        <div>過期時間：</div>
+        <div class="tpfield" id="card-expiration-date"></div>
+      </div>
+      <div class="form-group">
+        <div>驗證密碼：</div>
+        <div class="tpfield" id="card-ccv"></div>
+      </div>
     </div>
-    <div class="form-group">
-      <label for="expirationDate">過期時間：</label>
-      <input
-        type="text"
-        id="expirationDate"
-        name="expirationDate"
-        placeholder="MM / YY"
-        maxlength="7"
-        required
-      />
-    </div>
-    <div class="form-group">
-      <label for="cvv">驗證密碼：</label>
-      <input
-        type="text"
-        id="cvv"
-        name="cvv"
-        placeholder="CVV"
-        maxlength="3"
-        required
-      />
-    </div>
-  </div>
 
-  <hr />
+    <hr />
 
-  <div class="confirm-section">
-    <div class="total-price" id="total-price"></div>
-    <button>確認訂購並付款</button>
-  </div>
+    <div class="confirm-section">
+      <div class="total-price" id="total-price"></div>
+      <button id="payment-button">確認訂購並付款</button>
+    </div>
+  </form>
 </div>
 
 {% endblock %} {% block body_script %}
+<script src="https://js.tappaysdk.com/sdk/tpdirect/v5.17.0"></script>
 <script src="{{ url_for('static', filename='js/booking.js') }}"></script>
 {% endblock %}

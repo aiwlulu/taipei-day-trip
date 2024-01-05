@@ -1,0 +1,132 @@
+.order-container {
+  max-width: 1000px;
+  margin: 50px auto;
+  padding: 10px;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+}
+
+.order-container h2 {
+  text-align: center;
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.order-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #e1e1e1;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.order-number {
+  position: absolute;
+  top: 20px;
+  left: 10px;
+  background-color: #e1e1e1;
+  padding: 3px 7px;
+  border-radius: 5px;
+  font-size: 12px;
+  color: #666;
+  z-index: 1;
+}
+
+.order-price {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  color: #448899;
+  font-weight: bold;
+  z-index: 1;
+}
+
+.order-img {
+  width: 180px;
+  height: 135px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin: 15px;
+}
+
+.order-details {
+  flex-grow: 1;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.date-time {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.date-time img {
+  width: 20px;
+  margin-right: 10px;
+}
+
+.order-details h3 {
+  color: #448899;
+  font-size: 20px;
+  margin: 0;
+}
+
+.order-details p {
+  color: #666;
+  font-size: 16px;
+  margin: 5px 0;
+}
+
+@media (max-width: 600px) {
+  .order-container {
+    margin: 50px 20px;
+    padding: 5px;
+  }
+
+  .order-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .order-img {
+    width: 100%;
+    height: auto;
+    margin: 0;
+  }
+
+  .order-number {
+    top: 0px;
+    left: 0px;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .order-price {
+    top: 0px;
+    right: 0px;
+    font-size: 16px;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 5px 10px;
+    border-radius: 5px;
+  }
+
+  .order-details {
+    padding: 15px 15px;
+  }
+
+  .order-details p {
+    font-size: 14px;
+  }
+}

@@ -147,7 +147,7 @@ body {
 
 .booking-container .contact-form .form-group input:focus {
   outline: none;
-  border-color: #e8e8e8;
+  border: 2px solid #448899;
   box-shadow: 0 0 10px #e8e8e8;
   color: black;
 }
@@ -169,22 +169,22 @@ body {
 
 .booking-container .payment .form-group {
   margin-bottom: 15px;
+  display: flex;
+  align-items: center;
 }
 
-.booking-container .payment .form-group input {
+.booking-container .payment .form-group .tpfield {
   width: 200px;
   padding: 10px;
   border-radius: 5px;
   border: 1px #e8e8e8 solid;
-  gap: 4px;
   box-sizing: border-box;
+  margin-left: 5px;
+  height: 37.5px;
 }
 
-.booking-container .payment .form-group input:focus {
-  outline: none;
-  border-color: #e8e8e8;
-  box-shadow: 0 0 10px #e8e8e8;
-  color: black;
+.booking-container .payment .form-group .tappay-field-focus {
+  border: 2px solid #448899;
 }
 
 .booking-container .confirm-section {

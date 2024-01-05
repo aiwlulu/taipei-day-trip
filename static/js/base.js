@@ -16,7 +16,11 @@ const selectors = {
   loginEmail: "#login-email",
   loginPassword: "#login-password",
   loginMessage: ".login-message",
+  history: ".menu-item.history",
+  booking: ".menu-item.booking",
 };
+
+let isAuthChecked = false;
 
 const elements = {};
 
@@ -33,39 +37,84 @@ window.addEventListener("load", function () {
   }, 200);
 });
 
+function storeUserInfo(userInfo) {
+  localStorage.setItem("userInfo", JSON.stringify(userInfo));
+}
+
+function clearUserInfo() {
+  localStorage.removeItem("userInfo");
+}
+
 // Check login status & Logout
-async function checkUserLoginStatus() {
+window.checkUserLoginStatus = async function () {
+  if (isAuthChecked) {
+    return;
+  }
+
+  isAuthChecked = true;
+
   const token = localStorage.getItem("token");
   const logOut = document.querySelector(".logout");
   const loginRegister = document.querySelector(".login-register");
 
   if (token) {
-    const response = await fetch("/api/user/auth", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      const response = await fetch("/api/user/auth", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    const data = await response.json();
+      if (!response.ok) {
+        throw new Error("Token invalid or expired");
+      }
 
-    if (data.data) {
-      logOut.style.display = "block";
-    } else {
+      const data = await response.json();
+
+      if (data.data) {
+        const userData = data.data;
+        storeUserInfo(userData);
+
+        logOut.style.display = "block";
+        loginRegister.style.display = "none";
+      } else {
+        throw new Error("No user data returned");
+      }
+    } catch (error) {
+      console.error("Token validation error:", error);
+      localStorage.removeItem("token");
       loginRegister.style.display = "block";
     }
   } else {
     loginRegister.style.display = "block";
   }
-}
+};
 
 const logOut = document.querySelector(".logout");
 logOut.addEventListener("click", function () {
   localStorage.removeItem("token");
+  clearUserInfo();
   window.location.reload();
 });
 
-checkUserLoginStatus();
+document.addEventListener("DOMContentLoaded", (event) => {
+  checkUserLoginStatus();
+
+  // 更新導航欄選項顯示
+  const path = window.location.pathname;
+  const historyItem = document.querySelector(selectors.history);
+  const bookingItem = document.querySelector(selectors.booking);
+
+  // 根據當前路徑顯示或隱藏導航欄中的特定選項
+  if (path.startsWith("/booking")) {
+    historyItem.style.display = "block";
+    bookingItem.style.display = "none";
+  } else {
+    historyItem.style.display = "none";
+    bookingItem.style.display = "block";
+  }
+});
 
 function toggleDialog(dialog, isActive, maskDisplay) {
   dialog.classList.toggle("active", isActive);
@@ -238,6 +287,47 @@ bookingLink.addEventListener("click", async function () {
 
 const path = window.location.pathname;
 const token = localStorage.getItem("token");
-if (!token && path.includes("/booking")) {
+if (
+  !token &&
+  (path.includes("/booking") ||
+    path.includes("/thankyou") ||
+    path.includes("/history"))
+) {
   window.location.href = "/";
 }
+
+// Demo Account
+const demoAccountButton = document.querySelector(".demo-account-button");
+demoAccountButton.addEventListener("click", function () {
+  elements.loginEmail.value = "1@1.com";
+  elements.loginPassword.value = "1qaz@WSX";
+});
+
+// historyLink
+const historyLink = document.querySelector(".history");
+
+historyLink.addEventListener("click", async function () {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toggleDialog(elements.dialogSignin, true, "block");
+    } else {
+      const response = await fetch("/api/user/auth", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.data) {
+        window.location.href = "/history";
+      } else {
+        toggleDialog(elements.dialogSignin, true, "block");
+      }
+    }
+  } catch (error) {
+    console.error("發生錯誤：", error);
+  }
+});

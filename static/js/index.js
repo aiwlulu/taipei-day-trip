@@ -6,13 +6,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const mrtList = document.querySelector(".mrts-list");
   const buttonLeft = document.querySelector(".button-left");
   const buttonRight = document.querySelector(".button-right");
-
   let mrts = [];
   let nextPage = 0;
   let loading = false;
-
   const hostname = window.location.host;
   const apiBaseUrl = `http://${hostname}/api`;
+  const loader = document.getElementById("loader");
 
   function fetchData(url) {
     return fetch(url, {
@@ -40,6 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (loading || nextPage === null) return;
 
     loading = true;
+    loader.style.display = "block";
     const keyword = inputField.value.trim();
 
     fetchData(
@@ -48,37 +48,49 @@ document.addEventListener("DOMContentLoaded", function () {
       if (data.data.length === 0) {
         attractionsContainer.textContent = "沒有符合條件的結果";
         nextPage = null;
+        loading = false;
+        loader.style.display = "none";
       } else {
-        data.data.forEach((attraction) => {
-          const attractionItem = document.createElement("div");
-          attractionItem.classList.add("attraction-item");
-
-          attractionItem.addEventListener("click", () => {
-            const attractionId = attraction.id;
-
-            window.location.href = `/attraction/${attractionId}`;
+        const imagePromises = data.data.map((attraction) => {
+          return new Promise((resolve) => {
+            const img = new Image();
+            img.src = attraction.images[0] || "";
+            img.onload = resolve;
           });
-
-          const mrtText = attraction.mrt ? attraction.mrt : "無鄰近捷運站";
-
-          attractionItem.innerHTML = `
-                        <img src="${attraction.images[0] || ""}" alt="">
-                        <div class="attr-name">${attraction.name}</div>
-                        <div class="attr-container">
-                            <div class="attr-mrt">${mrtText}</div>
-                            <div class="attr-category">${
-                              attraction.category
-                            }</div>
-                        </div>
-                    `;
-
-          attractionsContainer.appendChild(attractionItem);
         });
 
-        nextPage = data.nextPage;
-      }
+        Promise.all(imagePromises).then(() => {
+          data.data.forEach((attraction) => {
+            const attractionItem = document.createElement("div");
+            attractionItem.classList.add("attraction-item");
 
-      loading = false;
+            attractionItem.addEventListener("click", () => {
+              const attractionId = attraction.id;
+
+              window.location.href = `/attraction/${attractionId}`;
+            });
+
+            const mrtText = attraction.mrt ? attraction.mrt : "無鄰近捷運站";
+
+            attractionItem.innerHTML = `
+                          <img src="${attraction.images[0] || ""}" alt="">
+                          <div class="attr-name">${attraction.name}</div>
+                          <div class="attr-container">
+                              <div class="attr-mrt">${mrtText}</div>
+                              <div class="attr-category">${
+                                attraction.category
+                              }</div>
+                          </div>
+                      `;
+
+            attractionsContainer.appendChild(attractionItem);
+          });
+
+          nextPage = data.nextPage;
+          loading = false;
+          loader.style.display = "none";
+        });
+      }
     });
   }
 
