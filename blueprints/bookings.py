@@ -1,12 +1,9 @@
 from flask import Blueprint, request, jsonify
 from db import cnxpool
 from datetime import datetime
-import jwt
-import os
 from blueprints.users import authenticate_user
 
 bookings_blueprint = Blueprint('bookings', __name__)
-
 
 @bookings_blueprint.route('', methods=['GET'])
 def get_unconfirmed_bookings():

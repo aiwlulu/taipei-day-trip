@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
 from db import cnxpool
 from datetime import datetime, timezone
-import jwt
 import os
 import pytz
 import requests
@@ -12,6 +11,7 @@ orders_blueprint = Blueprint('orders', __name__)
 
 order_count = 0
 current_time = None
+
 
 @orders_blueprint.route('', methods=['POST'])
 def create_orders():
@@ -156,3 +156,65 @@ def get_order(orderNumber):
         print(e)
         return jsonify({'error': True, 'message': "伺服器內部錯誤"}), 500
 
+
+@orders_blueprint.route('/history', methods=['GET'])
+def get_user_order_history():
+    is_authenticated, user_data = authenticate_user()
+    if not is_authenticated or user_data is None:
+        return jsonify({'error': True, 'message': "未登入系統，拒絕存取"}), 403
+
+    try:
+        cnx = cnxpool.get_connection()
+        cursor = cnx.cursor(dictionary=True)
+
+        query_get_user_orders = """
+            SELECT o.*, a.name AS attraction_name, a.address AS attraction_address, GROUP_CONCAT(ai.image_url) AS images
+            FROM `Order` o
+            JOIN `Attraction` a ON o.attraction_id = a.id
+            LEFT JOIN `AttractionImage` ai ON o.attraction_id = ai.attraction_id
+            WHERE o.user_id = %s
+            GROUP BY o.id
+            ORDER BY o.date DESC
+        """
+        cursor.execute(query_get_user_orders, (user_data['id'],))
+
+        orders_data = cursor.fetchall()
+
+        if not orders_data:
+            return jsonify({'data': []}), 200
+
+        orders_info = [format_order_data(order) for order in orders_data]
+
+        cursor.close()
+        cnx.close()
+
+        return jsonify({'data': orders_info}), 200
+
+    except Exception as e:
+        print(e)
+        return jsonify({'error': True, 'message': "伺服器內部錯誤"}), 500
+
+def format_order_data(order):
+    images = order['images'].split(',') if order['images'] else []
+    first_image_url = images[0] if images else None
+
+    return {
+        "number": order['order_number'],
+        "price": order['price'],
+        "trip": {
+            "attraction": {
+                "id": order['attraction_id'],
+                "name": order['attraction_name'],
+                "address": order['attraction_address'],
+                "image": first_image_url
+            },
+            "date": str(order['date']),
+            "time": order['time']
+        },
+        "contact": {
+            "name": order['contact_name'],
+            "email": order['contact_email'],
+            "phone": order['contact_phone']
+        },
+        "status": order['payment_status']
+    }

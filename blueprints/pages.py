@@ -17,3 +17,7 @@ def booking():
 @pages_blueprint.route("/thankyou")
 def thankyou():
     return render_template("thankyou.html")
+
+@pages_blueprint.route("/history")
+def history():
+    return render_template("history.html")
