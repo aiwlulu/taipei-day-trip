@@ -221,3 +221,8 @@ body {
 .booking-container .confirm-section button:hover {
   transform: scale(0.98);
 }
+
+.required {
+  color: red;
+  margin-right: 4px;
+}

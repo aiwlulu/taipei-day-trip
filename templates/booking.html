@@ -50,15 +50,18 @@
     <div class="contact-form">
       <div class="contact-title">您的聯絡資訊</div>
       <div class="form-group">
-        <label for="contactName">聯絡姓名：</label>
+        <span class="required">*</span
+        ><label for="contactName">聯絡姓名：</label>
         <input type="text" id="contactName" name="contactName" required />
       </div>
       <div class="form-group">
-        <label for="contactEmail">聯絡信箱：</label>
+        <span class="required">*</span
+        ><label for="contactEmail">聯絡信箱：</label>
         <input type="email" id="contactEmail" name="contactEmail" required />
       </div>
       <div class="form-group">
-        <label for="contactPhone">手機號碼：</label>
+        <span class="required">*</span
+        ><label for="contactPhone">手機號碼：</label>
         <input
           type="tel"
           id="contactPhone"
@@ -80,14 +83,17 @@
     <div class="payment">
       <div class="payment-title">信用卡付款資訊</div>
       <div class="form-group">
+        <span class="required">*</span>
         <div>卡片號碼：</div>
         <div class="tpfield" id="card-number"></div>
       </div>
       <div class="form-group">
+        <span class="required">*</span>
         <div>過期時間：</div>
         <div class="tpfield" id="card-expiration-date"></div>
       </div>
       <div class="form-group">
+        <span class="required">*</span>
         <div>驗證密碼：</div>
         <div class="tpfield" id="card-ccv"></div>
       </div>
